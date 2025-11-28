@@ -140,8 +140,10 @@ const Items = () => {
   let [Job_Work_Address, set_Job_Work_Address] = useState("");
 
   let handleAddItem = () => {
+    // ✅ Resolve final category value
     const finalCategory = Category === "Other" ? CustomCategory : Category;
 
+    // ✅ Resolve final sub-category value
     const finalSubCategory =
       Sub_Category === "Other" ? CustomSubCategory : Sub_Category;
 
@@ -190,8 +192,10 @@ const Items = () => {
         return;
       }
 
+      // Calculate tare value
       const tareValue = (gross * tarePercent) / 100;
 
+      // Net Quantity
       const net = gross - tareValue;
 
       set_Net_QTY(Math.floor(net));

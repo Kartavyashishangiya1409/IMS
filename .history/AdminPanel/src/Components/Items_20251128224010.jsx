@@ -190,8 +190,10 @@ const Items = () => {
         return;
       }
 
+      // Calculate tare value
       const tareValue = (gross * tarePercent) / 100;
 
+      // Net Quantity
       const net = gross - tareValue;
 
       set_Net_QTY(Math.floor(net));

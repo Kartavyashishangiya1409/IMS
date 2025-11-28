@@ -142,6 +142,7 @@ const Items = () => {
   let handleAddItem = () => {
     const finalCategory = Category === "Other" ? CustomCategory : Category;
 
+    // ✅ Resolve final sub-category value
     const finalSubCategory =
       Sub_Category === "Other" ? CustomSubCategory : Sub_Category;
 
@@ -190,8 +191,10 @@ const Items = () => {
         return;
       }
 
+      // Calculate tare value
       const tareValue = (gross * tarePercent) / 100;
 
+      // Net Quantity
       const net = gross - tareValue;
 
       set_Net_QTY(Math.floor(net));
