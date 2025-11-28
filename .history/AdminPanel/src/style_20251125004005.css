@@ -1,0 +1,120 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* nav */
+
+.navbar {
+    width: 100%;
+    height: 75px;
+    border: 1px solid;
+    display: flex;
+    justify-content: center;
+}
+.navbar .nav-section {
+    width: 1100px;
+    height: inherit;
+    border: 1px solid;
+    display: flex;
+    justify-content: center;
+}
+
+/***** COOL DARK STYLE FOR NAV-SECTION *****/
+
+body {
+    background: radial-gradient(circle at top, #1a1a22, #0d0d0f);
+}
+
+
+.nav-section {
+    background: linear-gradient(145deg, #1a1a22, #111117);
+    border-radius: 20px;
+    padding: 0 25px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    align-items: center;
+}
+
+/* SEARCH BOX */
+.search-box {
+    position: relative;
+    width: 320px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 18px;
+    background: #1f1f28;
+    border: 1px solid #2e2e38;
+    border-radius: 30px;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.search-box input::placeholder {
+    color: #777;
+}
+
+.search-box input:focus {
+    border-color: #00f2ff;
+    box-shadow: 0 0 0 2px rgba(0, 242, 255, 0.2);
+}
+
+/* SEARCH ICON */
+.search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.search-icon svg path {
+    fill: #00f2ff;
+}
+
+/* BUTTON CONTAINER */
+.user-icon, .Add-item {
+    display: flex;
+    align-items: center;
+}
+
+/* BUTTON STYLE */
+.user-login-btn,
+.add-item-btn {
+    border: none;
+    border-radius: 50%;
+    padding: 12px;
+    background: linear-gradient(145deg, #24242d, #18181f);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* ICON COLOR */
+.user-login-btn svg path,
+.add-item-btn svg path {
+    fill: #00f2ff;
+}
+
+/* HOVER EFFECT */
+.user-login-btn:hover,
+.add-item-btn:hover {
+    transform: scale(1.15) rotate(6deg);
+    box-shadow: 0 0 18px rgba(0, 242, 255, 0.6);
+}
+
+/* PRESS EFFECT */
+.user-login-btn:active,
+.add-item-btn:active {
+    transform: scale(0.95);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .search-box {
+        width: 200px;
+    }
+}

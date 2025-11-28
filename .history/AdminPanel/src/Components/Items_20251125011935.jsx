@@ -1,0 +1,114 @@
+import React, { useState, useEffect } from "react";
+
+const Items = () => {
+  let [userFlag, setUserFlag] = useState(true);
+
+  // ✅ Load saved theme or default to dark
+  let [darkTheme, setDarkTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme ? savedTheme === "dark" : true;
+  });
+
+  let handleUserLogin = (() => {
+    setUserFlag(false)
+  });
+
+  let handleAddItem = (() => {
+    setUserFlag(true)
+  });
+
+  const toggleTheme = () => {
+    setDarkTheme(prev => !prev);
+  };
+
+  // ✅ Apply theme + save it
+  useEffect(() => {
+    const theme = darkTheme ? "dark" : "light";
+    document.body.className = `${theme}-theme`;
+    localStorage.setItem("theme", theme);
+  }, [darkTheme]);
+
+
+  return (
+    <div>
+      <div className="navbar">
+        <div className="nav-section">
+
+          {/* SEARCH */}
+          <div className="search-box">
+            <input type="text" placeholder="Search" />
+            <div className="search-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="#000"
+                  d="M5 10a5 5 0 1 1 10 0a5 5 0 0 1-10 0m5-7a7 7 0 1 0 4.192 12.606l5.1 5.101a1 1 0 0 0 1.415-1.414l-5.1-5.1A7 7 0 0 0 10 3"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* RIGHT CONTROLS (THEME + USER) */}
+          <div className="nav-controls">
+
+            {/* THEME TOGGLE */}
+            <button className="theme-toggle-btn" onClick={toggleTheme}>
+              {darkTheme ? (
+                /* SUN ICON */
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000" fill-rule="evenodd" d="M13 3a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0zM6.343 4.929A1 1 0 0 0 4.93 6.343l1.414 1.414a1 1 0 0 0 1.414-1.414zm12.728 1.414a1 1 0 0 0-1.414-1.414l-1.414 1.414a1 1 0 0 0 1.414 1.414zM12 7a5 5 0 1 0 0 10a5 5 0 0 0 0-10m-9 4a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2zm16 0a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2zM7.757 17.657a1 1 0 1 0-1.414-1.414l-1.414 1.414a1 1 0 1 0 1.414 1.414zm9.9-1.414a1 1 0 0 0-1.414 1.414l1.414 1.414a1 1 0 0 0 1.414-1.414zM13 19a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0z" clip-rule="evenodd"/></svg>
+              ) : (
+                /* MOON ICON */
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                  <path fill="#00f2ff" d="M12.05 2.55a1 1 0 0 1 .91.58a8 8 0 0 0 8.46 11.09a1 1 0 0 1 .73 1.61a10 10 0 1 1-10.1-13.3z"/>
+                </svg>
+              )}
+            </button>
+
+            {/* USER / ADD BUTTON */}
+            <div className={userFlag ? "user-icon" : "Add-item"}>
+              <button
+                className={userFlag ? "user-login-btn" : "add-item-btn"}
+                onClick={userFlag ? handleUserLogin : handleAddItem}
+              >
+                {userFlag ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#000"
+                      d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#000"
+                      d="M10.5 20a1.5 1.5 0 0 0 3 0v-6.5H20a1.5 1.5 0 0 0 0-3h-6.5V4a1.5 1.5 0 0 0-3 0v6.5H4a1.5 1.5 0 0 0 0 3h6.5z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    .U
+  );
+};
+
+export default Items;

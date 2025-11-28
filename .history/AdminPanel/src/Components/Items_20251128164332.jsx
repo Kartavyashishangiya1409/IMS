@@ -1,0 +1,811 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Dashboard from "./Dashboard";
+
+const Items = () => {
+  const categoryData = {
+    Fasteners: ["Bolts", "Nuts", "Screws", "Washers", "Anchors", "Other"],
+
+    "Pipes & Fittings": [
+      "PVC Pipes",
+      "GI Pipes",
+      "Copper Pipes",
+      "Elbows",
+      "Tees",
+      "Couplers",
+      "Other",
+    ],
+
+    Tools: [
+      "Hand Tools",
+      "Power Tools",
+      "Measuring Tools",
+      "Cutting Tools",
+      "Welding Tools",
+      "Other",
+    ],
+
+    "Electrical Hardware": [
+      "Switches",
+      "Sockets",
+      "MCB",
+      "Wires & Cables",
+      "Distribution Boards",
+      "Other",
+    ],
+
+    "Construction Material": [
+      "Cement",
+      "Bricks",
+      "Steel Rods",
+      "Sand",
+      "Gravel",
+      "Other",
+    ],
+
+    "Plumbing Hardware": [
+      "Taps",
+      "Valves",
+      "Water Heaters",
+      "Pumps",
+      "Drainage Systems",
+      "Other",
+    ],
+
+    "Industrial Components": [
+      "Bearings",
+      "Gears",
+      "Chains",
+      "Springs",
+      "Hydraulic Parts",
+      "Other",
+    ],
+
+    "Safety Equipment": [
+      "Helmets",
+      "Gloves",
+      "Safety Goggles",
+      "Harnesses",
+      "Masks",
+      "Other",
+    ],
+
+    Other: [],
+  };
+
+  let [userFlag, setUserFlag] = useState(true);
+
+  let [darkTheme, setDarkTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme ? savedTheme === "dark" : true;
+  });
+
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
+
+  let [showModal, setShowModal] = useState(false);
+  const [showAddItemModal, setShowAddItemModal] = useState(false);
+
+  let handleUserLogin = () => {
+    setShowModal(true);
+
+    axios
+      .post("http://localhost:1000/LogIn", { email, password })
+      .then((res) => {
+        if (res.data.message === "Enter Both fields") return;
+        alert(res.data.message);
+        setShowModal(false);
+        if (res.data.message === "Admin Logged In") setUserFlag(false);
+
+        setEmail("");
+        setPassword("");
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
+
+  let handleAdd = () => {
+    closeAddModal(); // Clear old states
+    setShowAddItemModal(true);
+  };
+
+  const toggleTheme = () => {
+    setDarkTheme((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const theme = darkTheme ? "dark" : "light";
+    document.body.className = `${theme}-theme`;
+    localStorage.setItem("theme", theme);
+  }, [darkTheme]);
+
+  let [Item_Name, set_Item_Name] = useState("");
+  let [Challan_Number, set_Challan_Number] = useState("");
+  let [Category, set_Category] = useState("");
+  let [Sub_Category, set_Sub_Category] = useState("");
+  const [CustomCategory, setCustomCategory] = useState("");
+  const [CustomSubCategory, setCustomSubCategory] = useState("");
+  let [HSN_Code, set_HSN_Code] = useState("");
+  let [Attribute, set_Attribute] = useState("");
+  let [Gross_QTY, set_Gross_QTY] = useState("");
+  let [Tare_Weight, set_Tare_Weight] = useState("");
+  let [Net_QTY, set_Net_QTY] = useState(0);
+  let [Price_Per_QTY, set_Price_Per_QTY] = useState("");
+  let [GST_Number, set_GST_Number] = useState("");
+  let [Total_Price, set_Total_Price] = useState("");
+  let [Is_Job_Work, set_Is_Job_Work] = useState(false);
+  let [Job_Work_Name, set_Job_Work_Name] = useState("");
+  let [Job_Work_GST, set_Job_Work_GST] = useState("");
+  let [Job_Work_Address, set_Job_Work_Address] = useState("");
+
+  let handleAddItem = () => {
+    // ✅ Resolve final category value
+    const finalCategory = Category === "Other" ? CustomCategory : Category;
+
+    // ✅ Resolve final sub-category value
+    const finalSubCategory =
+      Sub_Category === "Other" ? CustomSubCategory : Sub_Category;
+
+    axios
+      .post("http://localhost:1000/AddItem", {
+        Item_Name,
+        Challan_Number,
+        Category: finalCategory,
+        Sub_Category: finalSubCategory,
+        HSN_Code,
+        Attribute,
+        Gross_QTY,
+        Tare_Weight,
+        Net_QTY,
+        Price_Per_QTY,
+        GST_Number,
+        Total_Price,
+        Is_Job_Work,
+        Job_Work_Name,
+        Job_Work_GST,
+        Job_Work_Address,
+      })
+      .then((res) => {
+        alert(res.data.message);
+
+        if (res.data.message === "Enter All Fields") return;
+        if (res.data.message === "Enter All Job Work Fields") return;
+
+        fetchItems();
+        closeAddModal();
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
+
+  useEffect(() => {
+    const gross = parseFloat(Gross_QTY);
+    const tarePercent = parseFloat(Tare_Weight);
+
+    if (!isNaN(gross) && !isNaN(tarePercent)) {
+      // ❌ Prevent tare > 50%
+      if (tarePercent > 50) {
+        alert("Tare weight cannot exceed 50%");
+        set_Tare_Weight(50);
+        return;
+      }
+
+      // Calculate tare value
+      const tareValue = (gross * tarePercent) / 100;
+
+      // Net Quantity
+      const net = gross - tareValue;
+
+      set_Net_QTY(Math.floor(net));
+    } else {
+      set_Net_QTY(0);
+    }
+  }, [Gross_QTY, Tare_Weight]);
+
+  useEffect(() => {
+    if (!Net_QTY || !Price_Per_QTY) {
+      set_Total_Price(0);
+      return;
+    }
+
+    const total = parseFloat(Net_QTY) * parseFloat(Price_Per_QTY);
+    set_Total_Price(total.toFixed(2));
+  }, [Net_QTY, Price_Per_QTY]);
+
+  let [allItems, setAllItems] = useState([]);
+
+  const fetchItems = () => {
+    axios
+      .get("http://localhost:1000/displayItems")
+      .then((res) => {
+        setAllItems(res.data.existingItems);
+      })
+      .catch((err) => alert(err));
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  console.log(allItems);
+
+  const [editItemId, setEditItemId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  let handleEditItem = (item) => {
+    setEditItemId(item._id);
+    setIsEditing(true);
+    setShowAddItemModal(true);
+
+    set_Item_Name(item.Item_Name);
+    set_Challan_Number(item.Challan_No);
+    set_GST_Number(item.GST_No);
+    set_Category(item.Category);
+    set_Sub_Category(item.Sub_Category);
+    set_HSN_Code(item.HSN_Code);
+    set_Attribute(item.Attribute);
+    set_Gross_QTY(item.Gross_QTY);
+    set_Tare_Weight(item.Tare_Weight);
+    set_Net_QTY(item.Net_QTY);
+    set_Price_Per_QTY(item.Price_Per_QTY);
+    set_Total_Price(item.Total_Price);
+    set_Is_Job_Work(item.Is_Job_Work);
+    set_Job_Work_Name(item.Job_Work_Name);
+    set_Job_Work_GST(item.Job_Work_GST);
+    set_Job_Work_Address(item.Job_Work_Address);
+  };
+
+  let handleUpdateItem = () => {
+    axios
+      .post(`http://localhost:1000/updateItem`, {
+        editItemId,
+        Item_Name,
+        Challan_Number,
+        GST_Number,
+        Category,
+        Sub_Category,
+        HSN_Code,
+        Attribute,
+        Gross_QTY,
+        Tare_Weight,
+        Price_Per_QTY,
+        Is_Job_Work,
+        Job_Work_Name,
+        Job_Work_GST,
+        Job_Work_Address,
+      })
+      .then((res) => {
+        alert(res.data.message);
+
+        if (res.data.message === "Enter All Fields") return;
+        if (res.data.message === "Enter All Job Work Fields") return;
+
+        fetchItems();
+        closeAddModal();
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
+
+  const handleDeleteItem = (id) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+
+    axios
+      .post("http://localhost:1000/deleteItem", { id })
+      .then((res) => {
+        alert(res.data.message);
+        fetchItems();
+      })
+      .catch((err) => alert(err));
+  };
+
+  const closeAddModal = () => {
+    setShowAddItemModal(false);
+    setIsEditing(false);
+    setEditItemId(null);
+
+    set_Item_Name("");
+    set_Challan_Number("");
+    set_GST_Number("");
+    set_Category("");
+    set_Sub_Category("");
+    set_HSN_Code("");
+    set_Attribute("");
+    set_Gross_QTY("");
+    set_Tare_Weight("");
+    set_Price_Per_QTY("");
+    set_Net_QTY(0);
+    set_Total_Price("");
+    set_Is_Job_Work(false);
+    set_Job_Work_Name("");
+    set_Job_Work_GST("");
+    set_Job_Work_Address("");
+  };
+
+  const closeLoginModal = () => {
+    setShowModal(false);
+    setEmail("");
+    setPassword("");
+  };
+
+  const [filterType, setFilterType] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredItems = allItems.filter((item) => {
+    const term = searchTerm.toLowerCase();
+
+    const matchsearch = 
+      item.Item_Name?.toLowerCase().includes(term) ||
+      item.Category?.toLowerCase().includes(term) ||
+      item.Sub_Category?.toLowerCase().includes(term) ||
+      item.Attribute?.toLowerCase().includes(term)
+
+    const matchesJobFilter = filterType === "all" || 
+        (filterType === "jobwork" && item.Is_Job_Work === true) ||
+    (jobFilter === "nojobwork" && item.Is_Job_Work === false);
+
+    if (filterType === "job") return item.Is_Job_Work === true;
+    if (filterType === "nojob") return item.Is_Job_Work === false;
+    return true; // all
+  });
+
+  const handleLogout = () => {
+    if (!window.confirm("Are you sure you want to logout?")) return;
+
+    setUserFlag(true);
+    setShowAddItemModal(false);
+    setIsEditing(false);
+    setEditItemId(null);
+
+    alert("Logged out successfully");
+  };
+
+  return (
+    <div>
+      <div className="navbar">
+        <div className="nav-section">
+          {/* SEARCH */}
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div className="search-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="#000"
+                  d="M5 10a5 5 0 1 1 10 0a5 5 0 0 1-10 0m5-7a7 7 0 1 0 4.192 12.606l5.1 5.101a1 1 0 0 0 1.415-1.414l-5.1-5.1A7 7 0 0 0 10 3"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* RIGHT CONTROLS */}
+          <div className="nav-controls">
+            {/* THEME TOGGLE */}
+            <button className="theme-toggle-btn" onClick={toggleTheme}>
+              {darkTheme ? (
+                // SUN
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#000"
+                    fill-rule="evenodd"
+                    d="M13 3a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0zM6.343 4.929A1 1 0 0 0 4.93 6.343l1.414 1.414a1 1 0 0 0 1.414-1.414zm12.728 1.414a1 1 0 0 0-1.414-1.414l-1.414 1.414a1 1 0 0 0 1.414 1.414zM12 7a5 5 0 1 0 0 10a5 5 0 0 0 0-10m-9 4a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2zm16 0a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2zM7.757 17.657a1 1 0 1 0-1.414-1.414l-1.414 1.414a1 1 0 1 0 1.414 1.414zm9.9-1.414a1 1 0 0 0-1.414 1.414l1.414 1.414a1 1 0 0 0 1.414-1.414zM13 19a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              ) : (
+                // MOON
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#00f2ff"
+                    d="M12.05 2.55a1 1 0 0 1 .91.58a8 8 0 0 0 8.46 11.09a1 1 0 0 1 .73 1.61a10 10 0 1 1-10.1-13.3z"
+                  />
+                </svg>
+              )}
+            </button>
+
+            {/* USER / ADD BUTTON */}
+            <div className={userFlag ? "user-icon" : "Add-item"}>
+              <button
+                className={userFlag ? "user-login-btn" : "add-item-btn"}
+                onClick={userFlag ? handleUserLogin : handleAdd}
+              >
+                {userFlag ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#000"
+                      d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="26"
+                    height="26"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#000"
+                      d="M10.5 20a1.5 1.5 0 0 0 3 0v-6.5H20a1.5 1.5 0 0 0 0-3h-6.5V4a1.5 1.5 0 0 0-3 0v6.5H4a1.5 1.5 0 0 0 0 3h6.5z"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+          {!userFlag && (
+            <button className="logout-btn" onClick={handleLogout}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 14 14"
+              >
+                <path
+                  fill="#333"
+                  fill-rule="evenodd"
+                  d="M0 1.5A1.5 1.5 0 0 1 1.5 0h7A1.5 1.5 0 0 1 10 1.5v1.939a2 2 0 0 0-.734 1.311H5.75a2.25 2.25 0 1 0 0 4.5h3.516A2 2 0 0 0 10 10.561V12.5A1.5 1.5 0 0 1 8.5 14h-7A1.5 1.5 0 0 1 0 12.5zm10.963 2.807A.75.75 0 0 0 10.5 5v1H5.75a1 1 0 0 0 0 2h4.75v1a.75.75 0 0 0 1.28.53l2-2a.75.75 0 0 0 0-1.06l-2-2a.75.75 0 0 0-.817-.163"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div
+            className="user-login-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* HEADER ROW */}
+            <div className="modal-header">
+              <h2>Log In</h2>
+
+              {/* CLOSE SVG (NO BUTTON) */}
+              <svg
+                className="modal-close-icon"
+                onClick={closeLoginModal}
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+              >
+                <g fill="none" fillRule="evenodd">
+                  <path
+                    fill="#00f2ff"
+                    d="m12 14.122l5.303 5.303a1.5 1.5 0 0 0 2.122-2.122L14.12 12l5.304-5.303a1.5 1.5 0 1 0-2.122-2.121L12 9.879L6.697 4.576a1.5 1.5 0 1 0-2.122 2.12L9.88 12l-5.304 5.304a1.5 1.5 0 1 0 2.122 2.12z"
+                  />
+                </g>
+              </svg>
+            </div>
+
+            {/* FORM */}
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button className="login-submit-btn" onClick={handleUserLogin}>
+              Log In
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showAddItemModal && (
+        <div className="modal-overlay">
+          <div
+            className="user-login-modal addItemForm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2>{isEditing ? "Update Item" : "Add Item"}</h2>
+
+              <svg
+                className="modal-close-icon"
+                onClick={closeAddModal}
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+              >
+                <g fill="none" fillRule="evenodd">
+                  <path
+                    fill="#00f2ff"
+                    d="m12 14.122l5.303 5.303a1.5 1.5 0 0 0 2.122-2.122L14.12 12l5.304-5.303a1.5 1.5 0 1 0-2.122-2.121L12 9.879L6.697 4.576a1.5 1.5 0 1 0-2.122 2.12L9.88 12l-5.304 5.304a1.5 1.5 0 1 0 2.122 2.12z"
+                  />
+                </g>
+              </svg>
+            </div>
+            {/* YOUR EXISTING FORM FIELDS HERE */}
+            <input
+              type="text"
+              placeholder="Name"
+              value={Item_Name}
+              onChange={(e) => set_Item_Name(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Challan number"
+              value={Challan_Number}
+              onChange={(e) => set_Challan_Number(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="GST Number"
+              value={GST_Number}
+              onChange={(e) => set_GST_Number(e.target.value)}
+            />
+
+            {/* CATEGORY */}
+            <select
+              value={Category}
+              onChange={(e) => {
+                set_Category(e.target.value);
+                set_Sub_Category("");
+                setCustomCategory("");
+              }}
+            >
+              <option value="">Select Category</option>
+              {Object.keys(categoryData).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+
+            {/* If Category = Other */}
+            {Category === "Other" && (
+              <input
+                type="text"
+                placeholder="Enter Custom Category"
+                value={CustomCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+              />
+            )}
+
+            {/* SUB CATEGORY */}
+            <select
+              value={Sub_Category}
+              onChange={(e) => {
+                set_Sub_Category(e.target.value);
+                setCustomSubCategory("");
+              }}
+              disabled={!Category || Category === "Other"}
+            >
+              <option value="">Select Sub Category</option>
+              {Category &&
+                categoryData[Category]?.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+            </select>
+
+            {/* If Sub-Category = Other */}
+            {Sub_Category === "Other" && (
+              <input
+                type="text"
+                placeholder="Enter Custom Sub Category"
+                value={CustomSubCategory}
+                onChange={(e) => setCustomSubCategory(e.target.value)}
+              />
+            )}
+
+            <input
+              type="number"
+              placeholder="HSN Code"
+              value={HSN_Code}
+              onChange={(e) => set_HSN_Code(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Attribute"
+              value={Attribute}
+              onChange={(e) => set_Attribute(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Gross QTY"
+              value={Gross_QTY}
+              onChange={(e) => set_Gross_QTY(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Tare Weight"
+              value={Tare_Weight}
+              onChange={(e) => set_Tare_Weight(e.target.value)}
+            />
+
+            <input
+              type="number"
+              placeholder="Price Per QTY"
+              value={Price_Per_QTY}
+              disabled={!Gross_QTY || !Tare_Weight}
+              onChange={(e) => set_Price_Per_QTY(e.target.value)}
+            />
+
+            <p className="calc-display">
+              <span>Net Quantity :</span> {Net_QTY}
+            </p>
+
+            <p className="calc-display">
+              <span>Total Price :</span> ₹ {Total_Price}
+            </p>
+
+            <div className="jobwork-toggle">
+              <label className="jobwork-label">
+                <span>Is it Job Work?</span>
+
+                <input
+                  type="checkbox"
+                  checked={Is_Job_Work}
+                  onChange={() => set_Is_Job_Work(!Is_Job_Work)}
+                />
+                <span className="jobwork-switch"></span>
+              </label>
+            </div>
+
+            {Is_Job_Work && (
+              <div className="jobworkForm">
+                <input
+                  type="text"
+                  placeholder="Job Work Name"
+                  value={Job_Work_Name}
+                  onChange={(e) => set_Job_Work_Name(e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Job Work GST"
+                  value={Job_Work_GST}
+                  onChange={(e) => set_Job_Work_GST(e.target.value)}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Job Work Address"
+                  value={Job_Work_Address}
+                  onChange={(e) => set_Job_Work_Address(e.target.value)}
+                />
+              </div>
+            )}
+
+            <button onClick={isEditing ? handleUpdateItem : handleAddItem}>
+              {isEditing ? "Update" : "Add"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <Dashboard allItems={allItems} />
+
+      <div className="filter-bar">
+        <button
+          className={`filter-btn ${filterType === "all" ? "active" : ""}`}
+          onClick={() => setFilterType("all")}
+        >
+          All
+        </button>
+
+        <button
+          className={`filter-btn ${filterType === "nojob" ? "active" : ""}`}
+          onClick={() => setFilterType("nojob")}
+        >
+          No Jobwork
+        </button>
+
+        <button
+          className={`filter-btn ${filterType === "job" ? "active" : ""}`}
+          onClick={() => setFilterType("job")}
+        >
+          Jobwork
+        </button>
+      </div>
+
+      <div className="item-list">
+        <div className="item-card-grid">
+          {filteredItems.map((item, index) => (
+            <div className="item-card" key={item._id}>
+              <h6>#{index + 1}</h6>
+              <h5>{item.Item_Name}</h5>
+              <h5>Challan: {item.Challan_No}</h5>
+              <h5>GST: {item.GST_No}</h5>
+              <h5>Category: {item.Category}</h5>
+              <h5>Sub: {item.Sub_Category || "N/A"}</h5>
+              <h5>HSN: {item.HSN_Code}</h5>
+              <h5>Attr: {item.Attribute}</h5>
+              <h5>
+                Gross: <span>{item.Gross_QTY}</span>
+              </h5>
+              <h5>
+                Tare: <span>{item.Tare_Weight}%</span>
+              </h5>
+              <h5>
+                Net: <span>{item.Net_QTY}</span>
+              </h5>
+              <h5>
+                <span>₹ {Number(item.Total_Price).toFixed(2)}</span>
+              </h5>
+
+              <h5>
+                Job Work: <span>{item.Is_Job_Work ? "Yes" : "No"}</span>
+              </h5>
+
+              {filterType === "job" && item.Is_Job_Work && (
+                <div className="jobwork-box">
+                  <div className="jobwork-title">JOB WORK DETAILS</div>
+
+                  <div className="jobwork-row">
+                    <span className="jobwork-label">Company</span>
+                    <span className="jobwork-value">{item.Job_Work_Name}</span>
+                  </div>
+
+                  <div className="jobwork-row">
+                    <span className="jobwork-label">GST</span>
+                    <span className="jobwork-value">{item.Job_Work_GST}</span>
+                  </div>
+
+                  <div className="jobwork-row">
+                    <span className="jobwork-label">Address</span>
+                    <span className="jobwork-value">
+                      {item.Job_Work_Address}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {!userFlag && (
+                <div className="card-actions">
+                  <button onClick={() => handleEditItem(item)}>Edit</button>
+                  <button onClick={() => handleDeleteItem(item._id)}>
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Items;

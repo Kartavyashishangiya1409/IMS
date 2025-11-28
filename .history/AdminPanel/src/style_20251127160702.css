@@ -1,0 +1,411 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* ================= PAGE BACKGROUND ================= */
+
+body.dark-theme {
+    background: radial-gradient(circle at top, #1a1a22, #0d0d0f);
+}
+
+body.light-theme {
+    background: linear-gradient(135deg, #f2f3f7, #dfe3ea);
+}
+
+/* ================= NAVBAR STRUCTURE ================= */
+
+.navbar {
+    width: 100%;
+    height: 75px;
+    display: flex;
+    justify-content: center;
+}
+
+.navbar .nav-section {
+    width: 1100px;
+    height: inherit;
+    display: flex;
+}
+
+/* ================= MAIN NAV SECTION STYLE ================= */
+
+.nav-section {
+    margin-top: 10px;
+    background: linear-gradient(145deg, #1a1a22, #111117);
+    border-radius: 22px;
+    padding: 0 20px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    align-items: center;
+    display: flex;
+    gap: 8px;
+}
+
+/* ================= SEARCH ================= */
+
+.search-box {
+    position: relative;
+    flex: 1;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 50px 12px 18px;
+    background: #1f1f28;
+    border: 1px solid #2e2e38;
+    border-radius: 30px;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+
+.search-box input::placeholder {
+    color: #777;
+}
+
+.search-box input:focus {
+    border-color: #00f2ff;
+    box-shadow: 0 0 6px rgba(0, 242, 255, 0.5);
+}
+
+/* SEARCH ICON */
+.search-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.search-icon svg path {
+    fill: #00f2ff;
+}
+
+/* ================= RIGHT CONTROLS ================= */
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ================= PERFECT CIRCLE BUTTONS ================= */
+
+.theme-toggle-btn,
+.user-login-btn,
+.add-item-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(145deg, #24242d, #18181f);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* ICON COLOR */
+.theme-toggle-btn svg path,
+.user-login-btn svg path,
+.add-item-btn svg path {
+    fill: #00f2ff;
+}
+
+/* NO ANIMATION */
+.user-login-btn:hover,
+.add-item-btn:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* ================= LIGHT THEME OVERRIDES ================= */
+
+.light-theme .nav-section {
+    background: #ffffff;
+}
+
+.light-theme .search-box input {
+    background: #f1f1f4;
+    color: #111;
+    border: 1px solid #ccc;
+}
+
+.light-theme .search-box input::placeholder {
+    color: #666;
+}
+
+/* MATCH SEARCH ICON WITH OTHER ICONS */
+.light-theme .search-icon svg path {
+    fill: #333;
+}
+
+/* Light buttons */
+.light-theme .user-login-btn,
+.light-theme .add-item-btn,
+.light-theme .theme-toggle-btn {
+    background: #e8e8ec;
+}
+
+/* Light icon color */
+.light-theme .user-login-btn svg path,
+.light-theme .add-item-btn svg path,
+.light-theme .theme-toggle-btn svg path {
+    fill: #333;
+}
+
+/* Remove cyan focus highlight in LIGHT THEME */
+.light-theme .search-box input:focus {
+    border-color: #ccc;
+    box-shadow: none;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+    .nav-section {
+        padding: 0 12px;
+    }
+}
+
+/* ================= MODAL OVERLAY ================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* ================= MODAL CONTAINER ================= */
+.user-login-modal {
+    width: 420px;
+    background: linear-gradient(145deg, #1a1a22, #111117);
+    border-radius: 24px;
+    padding: 24px 26px 28px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+}
+
+/* ================= HEADER ================= */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    background: transparent; /* ✅ ENSURE NO BAR BACKGROUND */
+}
+
+.modal-header h2 {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* ================= CLOSE BUTTON ================= */
+.modal-close-icon {
+    background: none !important;  /* ✅ NO BACKGROUND */
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* LIGHT MODE - make close icon normal */
+.light-theme .modal-close-icon path {
+    fill: #555;   /* soft dark grey */
+}
+
+
+/* ================= INPUT FIELDS ================= */
+.user-login-modal input {
+    width: 100%;
+    padding: 15px 18px;
+    border-radius: 16px;
+    border: 1px solid #2e2e38;
+    background: #1f1f28;
+    color: #fff;
+    outline: none;
+    font-size: 15px;
+    margin-bottom: 18px;
+}
+
+.user-login-modal input::placeholder {
+    color: #888;
+}
+
+/* Dark focus glow */
+.user-login-modal input:focus {
+    border-color: #00f2ff;
+    box-shadow: 0 0 8px rgba(0, 242, 255, 0.35);
+}
+
+/* ================= LOGIN BUTTON ================= */
+.user-login-modal button:last-child {
+    width: 100%;
+    padding: 16px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(145deg, #00f2ff, #00b6c2);
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.user-login-modal button:last-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 242, 255, 0.35);
+}
+
+/* ================= LIGHT MODE ================= */
+
+.light-theme .user-login-modal {
+    background: #ffffff;
+}
+
+.light-theme .modal-header h2 {
+    color: #111;
+}
+
+/* Input light */
+.light-theme .user-login-modal input {
+    background: #f5f5f7;
+    border: 1px solid #ccc;
+    color: #111;
+}
+
+/* ✅ No cyan focus in light */
+.light-theme .user-login-modal input:focus {
+    border-color: #bbb;
+    box-shadow: none;
+}
+
+/* ✅ No cyan hover glow in light */
+.light-theme .user-login-modal button:last-child:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Login button light */
+.light-theme .user-login-modal button:last-child {
+    background: linear-gradient(145deg, #000, #222);
+    color: #fff;
+}
+
+
+
+
+
+
+
+/* ================= ADD ITEM MODAL ================= */
+
+/* Inherit same modal look */
+.addItemForm {
+    background: inherit;
+    border-radius: inherit;
+    padding: inherit;
+    box-shadow: inherit;
+}
+
+/* Inputs same look as login */
+.addItemForm input,
+.addItemForm select {
+    width: 100%;
+    padding: 15px 18px;
+    border-radius: 16px;
+    border: 1px solid #2e2e38;
+    background: #1f1f28;
+    color: #fff;
+    outline: none;
+    font-size: 15px;
+    margin-bottom: 18px;
+}
+
+/* Dark focus */
+.addItemForm input:focus,
+.addItemForm select:focus {
+    border-color: #00f2ff;
+    box-shadow: 0 0 8px rgba(0, 242, 255, 0.35);
+}
+
+/* Button style same as login */
+.addItemForm button {
+    width: 100%;
+    padding: 16px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(145deg, #00f2ff, #00b6c2);
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+/* LIGHT MODE */
+.light-theme .addItemForm input,
+.light-theme .addItemForm select {
+    background: #f5f5f7;
+    border: 1px solid #ccc;
+    color: #111;
+}
+
+.light-theme .addItemForm input:focus,
+.light-theme .addItemForm select:focus {
+    border-color: #bbb;
+    box-shadow: none;
+}
+
+.light-theme .addItemForm button {
+    background: linear-gradient(145deg, #000, #222);
+    color: #fff;
+}
+
+/* Scroll protection */
+.addItemForm {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Hide scrollbar but keep scroll working */
+.addItemForm {
+    overflow-y: auto;
+}
+
+/* Chrome, Edge, Safari */
+.addItemForm::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+/* Firefox */
+.addItemForm {
+    scrollbar-width: none;
+}
+
+/* Internet Explorer / old Edge */
+.addItemForm {
+    -ms-overflow-style: none;
+}
+
+.addItemForm {
+    padding: 30px 32px 32px;
+}
+
+.user-login-modal,
+.addItemForm {
+    border-radius: 24px;
+}
+
+
+
+

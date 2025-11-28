@@ -1,0 +1,115 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* nav */
+
+.navbar {
+    width: 100%;
+    height: 75px;
+    border: 1px solid;
+    display: flex;
+    justify-content: center;
+}
+.navbar .nav-section {
+    width: 1100px;
+    height: inherit;
+    border: 1px solid;
+    display: flex;
+    justify-content: center;
+}
+
+/* DARK MODE BASE */
+body {
+    background: #121212;
+    color: #fff;
+}
+
+/* NAVBAR */
+.navbar {
+    background: #1e1e1e;
+    border: none;
+    border-radius: 16px;
+    margin: 20px auto;
+}
+
+/* NAV CONTAINER */
+.nav-section {
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+/* SEARCH BOX */
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 45px 10px 15px;
+    background: #2a2a2a;
+    border: none;
+    border-radius: 25px;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-box input::placeholder {
+    color: #aaa;
+}
+
+/* SEARCH ICON */
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.search-icon svg path {
+    fill: #aaa;
+}
+
+/* USER + ADD BUTTON WRAPPER */
+.user-icon,
+.Add-item {
+    display: flex;
+    align-items: center;
+}
+
+/* BUTTON COMMON */
+.user-login-btn,
+.add-item-btn {
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    transition: 0.2s ease;
+}
+
+/* ICON COLOR */
+.user-login-btn svg path,
+.add-item-btn svg path {
+    fill: #fff;
+}
+
+/* HOVER EFFECT */
+.user-login-btn:hover,
+.add-item-btn:hover {
+    background: #333;
+    transform: scale(1.08);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .search-box {
+        width: 200px;
+    }
+}
