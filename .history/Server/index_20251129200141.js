@@ -10,11 +10,7 @@ mongoose
 
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: "*",          // or "https://ims-nu-pied.vercel.app"
-  methods: ["GET", "POST"],
-  credentials: false
-}));
+app.use(cors());
 
 
 let AdminEmail = "admin@app.com";

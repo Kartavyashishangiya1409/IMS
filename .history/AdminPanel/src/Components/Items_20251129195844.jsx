@@ -227,6 +227,8 @@ const Items = () => {
     fetchItems();
   }, []);
 
+  console.log(allItems);
+
   const [editItemId, setEditItemId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -255,7 +257,7 @@ const Items = () => {
 
   let handleUpdateItem = () => {
     axios
-      .post(`${BASE_URL}/updateItem`, {
+      .post(`http://localhost:1000/updateItem`, {
         editItemId,
         Item_Name,
         Challan_Number,
@@ -290,7 +292,7 @@ const Items = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     axios
-      .post(`${BASE_URL}/deleteItem`, { id })
+      .post("http://localhost:1000/deleteItem", { id })
       .then((res) => {
         alert(res.data.message);
         fetchItems();

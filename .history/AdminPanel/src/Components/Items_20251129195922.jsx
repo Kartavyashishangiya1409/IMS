@@ -290,7 +290,7 @@ const Items = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     axios
-      .post(`${BASE_URL}/deleteItem`, { id })
+      .post(`http://localhost:1000/deleteItem`, { id })
       .then((res) => {
         alert(res.data.message);
         fetchItems();
